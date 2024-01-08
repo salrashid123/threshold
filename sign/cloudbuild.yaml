@@ -1,0 +1,16 @@
+steps:
+
+  - name: gcr.io/cloud-builders/bazel@sha256:7c34604572d4f001928b98f2b04e2feaebce67b7933e4182b817dcbfe9904bcd
+    id: build
+    args: ['--output_base=/workspace/build_output', 'build', 'client:tar-oci-index']
+
+  - name: gcr.io/cloud-builders/bazel@sha256:7c34604572d4f001928b98f2b04e2feaebce67b7933e4182b817dcbfe9904bcd
+    id: push
+    args: ['--output_base=/workspace/build_output', 'run',  'client:push-image']
+    waitFor: ['build']
+
+serviceAccount: 'projects/$PROJECT_ID/serviceAccounts/cosign@$PROJECT_ID.iam.gserviceaccount.com'
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'N1_HIGHCPU_32'
+

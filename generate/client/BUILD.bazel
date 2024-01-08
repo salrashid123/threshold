@@ -1,0 +1,94 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push", "oci_tarball", "oci_image_index")
+
+load("@bazel_gazelle//:def.bzl", "gazelle")
+gazelle(name = "gazelle")
+
+go_binary(
+    name = "main",
+    out = "client",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+    goos = "linux", 
+    goarch = "amd64",     
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = ["client.go"],
+    importpath = "github.com/salrashid123/threshold/generate/client",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//common:go_default_library",
+        "@com_github_salrashid123_confidential_space_claims//:go_default_library",
+        "@com_github_hashicorp_vault_sdk//helper/xor:go_default_library",
+        "@com_github_golang_glog//:go_default_library",        
+        "@com_github_golang_jwt_jwt_v5//:go_default_library",
+        "@com_github_lestrrat_go_jwx//jwk:go_default_library",
+        "@com_github_golang_glog//:go_default_library",                                  
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_x_net//context:go_default_library",    
+    ],
+)
+
+
+pkg_tar(
+    name = "app-tar",
+    srcs = [":main"],
+    package_dir = "/",
+)
+
+pkg_tar(
+    name = "certs_bundle",
+    srcs = [
+        "//certs:tls-ca-chain.pem",
+        "//certs:client-ca.crt",        
+        "//certs:client-ca.key",
+    ],
+    package_dir = "/certs",
+)
+
+oci_image(
+    name = "client-image",
+    base = "@distroless_base",
+    tars = [":certs_bundle", ":app-tar"],   
+    entrypoint = ["/client"],
+    cmd = [],
+    env = {},  
+)
+
+oci_tarball(
+    name = "tar-docker",
+    image = "client-image",
+    format = "docker",
+    repo_tags = ["localhost:4000/generate-client"],
+    #repo_tags = ["docker.io/salrashid123/generate-client"],    
+    #repo_tags = ["us-central1-docker.pkg.dev/$PROJECT_ID/generate-repo/generate-client"],          
+)
+
+oci_image_index(
+    name = "app-index",
+    images = [
+        ":client-image",
+    ]
+)
+
+oci_tarball(
+    name = "tar-oci-index",
+    image = ":app-index",
+    format = "oci",
+    repo_tags = ["localhost:4000/generate-client"],
+    #repo_tags = ["docker.io/salrashid123/generate-client"],    
+    #repo_tags = ["us-central1-docker.pkg.dev/$PROJECT_ID/generate-repo/generate-client"],          
+)
+
+oci_push(
+    name = "push-image",
+    image = ":client-image",
+    repository = "localhost:4000/generate-client",
+    #repository = "docker.io/salrashid123/generate-client",        
+    #repository = ["us-central1-docker.pkg.dev/$PROJECT_ID/generate-repo/generate-client"],       
+    remote_tags = ["client"]
+)
