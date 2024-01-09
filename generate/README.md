@@ -341,6 +341,9 @@ gcloud projects add-iam-policy-binding $OPERATOR_PROJECT_ID \
   --member=serviceAccount:operator-svc-account@$OPERATOR_PROJECT_ID.iam.gserviceaccount.com  \
   --role=roles/logging.logWriter
 
+gcloud compute firewall-rules create allow-tee-inbound-8081 --project $OPERATOR_PROJECT_ID \
+    --action allow --direction INGRESS    --source-ranges 0.0.0.0/0     --target-tags tee-vm    --rules tcp:8081
+
 gcloud compute instances create vm1 --confidential-compute \
  --shielded-secure-boot --tags=tee-vm --project $OPERATOR_PROJECT_ID \
  --maintenance-policy=TERMINATE --scopes=cloud-platform  --zone=us-central1-a \
@@ -380,17 +383,17 @@ openssl rsa -in 3_priv.pem -outform PEM -pubout -out 3_pub.pem
 go run client/client.go  --mode generate_cert  \
    --pubKey=certs/0_pub.pem --privKey=certs/0_priv.pem \
    --clientCert=certs/0_cert.crt \
-   --clientCACert=certs/client-ca.crt --clientCAKey=certs/client-ca.key 
+   --clientCACert=certs/client-ca.crt --clientCAKey=certs/client-ca.key --clientCertValidityHours=24
 
 go run client/client.go  --mode generate_cert  \
    --pubKey=certs/1_pub.pem --privKey=certs/1_priv.pem \
    --clientCert=certs/1_cert.crt \
-   --clientCACert=certs/client-ca.crt --clientCAKey=certs/client-ca.key
+   --clientCACert=certs/client-ca.crt --clientCAKey=certs/client-ca.key --clientCertValidityHours=24
 
 go run client/client.go  --mode generate_cert  \
    --pubKey=certs/2_pub.pem --privKey=certs/2_priv.pem \
    --clientCert=certs/2_cert.crt \
-   --clientCACert=certs/client-ca.crt --clientCAKey=certs/client-ca.key      
+   --clientCACert=certs/client-ca.crt --clientCAKey=certs/client-ca.key --clientCertValidityHours=24     
 
 
 go run client/client.go   --host $EXTERNAL_IP:8081 --mode create_marker \

@@ -62,7 +62,7 @@ var (
 	t                                    = flag.Int("t", 2, "t")
 	marshal_custom_token_string_as_array = flag.Bool("marshal_custom_token_string_as_array", false, "Try to parse audience and eat_token as string array even if single string")
 
-	allowedImageReference = flag.String("allowedImageReference", "index.docker.io/salrashid123/generate-server@sha256:8d6c1032ee61736d7d1aad105b23d7cc772cc8d0570af47c9ae3402ce469e37c", "Allowed server Image")
+	allowedImageReference = flag.String("allowedImageReference", "index.docker.io/salrashid123/generate-server@sha256:c7da9ee9a740e648c94e56cb2645897212e3be1815290ac4cf3982e8d77750a1", "Allowed server Image")
 	allowedIssuer         = flag.String("allowedIssuer", "https://confidentialcomputing.googleapis.com", "Allowed attestation issuer")
 	allowedJWKURL         = flag.String("allowedJWKURL", "https://www.googleapis.com/service_accounts/v1/metadata/jwk/signer@confidentialspace-sign.iam.gserviceaccount.com", "Allowed attestation JWK URL")
 

@@ -205,6 +205,9 @@ gcloud projects add-iam-policy-binding $OPERATOR_PROJECT_ID \
   --member=serviceAccount:operator-svc-account@$OPERATOR_PROJECT_ID.iam.gserviceaccount.com  \
   --role=roles/logging.logWriter
 
+gcloud compute firewall-rules create allow-tee-inbound-8081 --project $OPERATOR_PROJECT_ID \
+    --action allow --direction INGRESS    --source-ranges 0.0.0.0/0     --target-tags tee-vm    --rules tcp:8081
+
 gcloud compute instances create vm1 --confidential-compute \
  --shielded-secure-boot --tags=tee-vm --project $OPERATOR_PROJECT_ID \
  --maintenance-policy=TERMINATE --scopes=cloud-platform  --zone=us-central1-a \
