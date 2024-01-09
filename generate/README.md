@@ -254,7 +254,7 @@ If all participants submitted their public keys, a `t of n` threshold keyset is 
 
 Once all the participants submit their signatures, the threshold keys are created.  Each participant gets one key that is further encrypted by their corresponding RSA Public key.
 
-- `/get_key`
+#### `/get_key`
 
 The final step is for each participant to retrieve their portion of the keyshare
 
