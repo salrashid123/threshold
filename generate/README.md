@@ -9,7 +9,9 @@ There are several core concepts related to this protocol:
 
 Key generation basically involves each participant creating an RSA key pair locally submitting their _RSA_ public key to the TEE/server.
 
-Each other participant can optionally trust other participants RSA Public Key.  This is not necessary but helps each participant know who the other participants are (or atleast the other participants public key).
+Each other participant should trust other participants RSA Public Key.  This is not necessary but helps each participant know who the other participants are (or atleast the other participants public key).
+
+Every api interaction uses mTLS and within an API call, the list of RSA public keys must be sent in.  The server verifies RSA Public Key on that TLS channel matches one of the RSA key pairs participating in the generation.
 
 This protocol requires each participant to digitally sign some data using the RSA Private key and submit that to the Server.  The server will verify the signature and use that as confirmation a participant has ownership of that keypair and is in agreement to issue the threshold key specifications and other participants.
 
