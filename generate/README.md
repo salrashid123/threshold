@@ -291,9 +291,15 @@ Again, critically the threshold private key is encrypted using the RSA public ke
 
 ### Generate Server
 
-Running locally requires `bazel` or `go 1.19+` and optionally `protoc`.
+Running locally requires `bazel` or `go 1.19+`.
 
-To build and run the server image,
+You can either build and run the server image from scratch.
+
+Since we're using bazel to create the container image, the image hash will always be `c7da9ee9a740e648c94e56cb2645897212e3be1815290ac4cf3982e8d77750a1`
+
+If you want to skip the build step, use the dockerhub image below and skip to the launch step:
+
+* index.docker.io/salrashid123/generate-server@sha256:c7da9ee9a740e648c94e56cb2645897212e3be1815290ac4cf3982e8d77750a1``
 
 ```bash
 cd generate/
@@ -302,6 +308,7 @@ cd generate/
 
 # bazel run server:main -- --listen :8081    --tlsCert=`pwd`/certs/server.crt --tlsKey=`pwd`/certs/server.key    --tlsCA=`pwd`/certs/tls-ca-chain.pem --clientCertCA=`pwd`/certs/client-ca.crt --v=30 -alsologtostderr
 
+# run a local registry like crane
 crane registry serve --address :4000
 
 # bazel run server:push-image
@@ -326,6 +333,9 @@ docker run  --net=host -e USER="$(id -u)" \
 #    --tlsCert=certs/server.crt --tlsKey=certs/server.key \
 #    --tlsCA=certs/tls-ca-chain.pem --clientCertCA=certs/client-ca.crt --v=30 -alsologtostderr
 ```
+
+
+Configure and launch a conf-vm with the image
 
 ```bash
 gcloud config configurations activate operator
